@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dev
+    pull_requests: 
+     branches:
+      - dev
   workflow_dispatch:
 
 
