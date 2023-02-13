@@ -1,9 +1,9 @@
 name: Build
 
 on:
-  pull_request:
+  push:
     branches:
-     - stating
+      - stating
   workflow_dispatch:
 
 
