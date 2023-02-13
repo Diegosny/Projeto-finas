@@ -28,3 +28,18 @@ jobs:
       #   timeout-minutes: 5
       #   env:
       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  tests: 
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: shivammathur/setup-php@v2
+      - with:
+        php-version: '7.4'
+        coverage: xdebug
+      - name: Install dependencies with composer
+         run: composer update --no-ansi --no-interaction --no-progress
+      - name: Run tests with phpunit/phpunit
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@master
