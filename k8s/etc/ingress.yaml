@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: projeto-finas
+  labels:
+    app.kubernetes.io/name: projeto-finas
+spec:
+  rules:
+  - host: finas.solustecompany.com.br
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: projeto-finas
+            port: 
+              number: 80
