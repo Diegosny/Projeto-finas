@@ -1,33 +1,36 @@
 name: Docker registry
 
 on: 
-   push:
-     branches:
-       - 'master'
-
+  push:
+    branches:
+      - 'master'
 
 env:
-    APP_NAME: projeto-finas-app       
+  APP_NAME: projeto-finas-app
+  IMAGE_TAG: ${{ github.sha }}   # usa o hash do commit como tag da imagem
+  REGISTRY: ghcr.io
+  REPO: ${{ github.repository }} # org/repo
 
 jobs:
-  github:
+  build-and-push:
     runs-on: ubuntu-latest    
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
 
-      - name: Login to github registry
-        uses: actions-hub/docker/login@master
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-          DOCKER_REGISTRY_URL: docker.pkg.github.com
-
-      - name: Build :tag
-        if: success()
-        run: docker build -t docker.pkg.github.com/${{ env.APP_NAME }}/app:${IMAGE_TAG} .
-
-      - name: Push to docker hub :tag
-        if: success()
-        uses: actions-hub/docker@master
+      # Login no GHCR
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
         with:
-          args: push docker.pkg.github.com/${{ env.APP_NAME }}:${IMAGE_TAG}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Build da imagem
+      - name: Build image
+        run: |
+          docker build -t $REGISTRY/$REPO/${{ env.APP_NAME }}:${IMAGE_TAG} .
+
+      # Push da imagem
+      - name: Push image
+        run: |
+          docker push $REGISTRY/$REPO/${{ env.APP_NAME }}:${IMAGE_TAG}
