@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: apps
+  name: projeto-finas
+spec:
+  selector:
+    matchLabels:
+      app: projeto-finas
+  template:
+    metadata:
+      labels:
+        app: projeto-finas
+    spec:
+      containers:
+      - name: projeto-finas
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
