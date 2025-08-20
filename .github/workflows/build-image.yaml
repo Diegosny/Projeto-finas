@@ -9,13 +9,17 @@ env:
   APP_NAME: projeto-finas-app
   IMAGE_TAG: ${{ github.sha }}   # usa o hash do commit como tag da imagem
   REGISTRY: ghcr.io
-  REPO: ${{ github.repository }} # org/repo
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest    
     steps:
       - uses: actions/checkout@v3
+
+      # Normaliza o repo para lowercase
+      - name: Set lowercase REPO name
+        id: repo
+        run: echo "repo=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       # Login no GHCR
       - name: Login to GitHub Container Registry
@@ -28,9 +32,9 @@ jobs:
       # Build da imagem
       - name: Build image
         run: |
-          docker build -t $REGISTRY/$REPO/${{ env.APP_NAME }}:${IMAGE_TAG} .
+          docker build -t $REGISTRY/${{ steps.repo.outputs.repo }}/${{ env.APP_NAME }}:${IMAGE_TAG} .
 
       # Push da imagem
       - name: Push image
         run: |
-          docker push $REGISTRY/$REPO/${{ env.APP_NAME }}:${IMAGE_TAG}
+          docker push $REGISTRY/${{ steps.repo.outputs.repo }}/${{ env.APP_NAME }}:${IMAGE_TAG}
